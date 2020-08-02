@@ -1,5 +1,6 @@
 // Получение ссылок на элементы UI
 let connectButton = document.getElementById('connect');
+let connect2Button = document.getElementById('connect2');
 let disconnectButton = document.getElementById('disconnect');
 let terminalContainer = document.getElementById('terminal');
 let sendForm = document.getElementById('send-form');
@@ -8,6 +9,9 @@ let inputField = document.getElementById('input');
 // Подключение к устройству при нажатии на кнопку Connect
 connectButton.addEventListener('click', function() {
   connect();
+});
+connect2Button.addEventListener('click', function() {
+  connect_cc2541();
 });
 
 // Отключение от устройства при нажатии на кнопку Disconnect
@@ -31,6 +35,13 @@ function connect() {
   return (deviceCache ? Promise.resolve(deviceCache) :
       requestBluetoothDevice()).
       then(device => connectDeviceAndCacheCharacteristic(device)).
+      then(characteristic => startNotifications(characteristic)).
+      catch(error => log(error));
+}
+function connect_cc2541() {
+  return (deviceCache ? Promise.resolve(deviceCache) :
+      requestBluetoothDevice_cc2541()).
+      then(device => connectDeviceAndCacheCharacteristic_cc2541(device)).
       then(characteristic => startNotifications(characteristic)).
       catch(error => log(error));
 }
@@ -64,6 +75,31 @@ function connectDeviceAndCacheCharacteristic(device) {
         return characteristicCache;
       });
 }
+function connectDeviceAndCacheCharacteristic_cc2541(device) {
+  if (device.gatt.connected && characteristicCache) {
+    return Promise.resolve(characteristicCache);
+  }
+
+  log('Connecting to GATT server...');
+
+  return device.gatt.connect().
+      then(server => {
+        log('GATT server connected, getting service...');
+
+        return server.getPrimaryService(0xFFF0);
+      }).
+      then(service => {
+        log('Service found, getting characteristic...');
+
+        return service.getCharacteristic(0xFFF4);
+      }).
+      then(characteristic => {
+        log('Characteristic found');
+        characteristicCache = characteristic;
+
+        return characteristicCache;
+      });
+}
 // Вывод в терминал
 function log(data, type = '') {
   terminalContainer.insertAdjacentHTML('beforeend',
@@ -76,6 +112,23 @@ function requestBluetoothDevice() {
 
   return navigator.bluetooth.requestDevice({
     filters: [{services: [0xFFE0]}],
+  }).
+      then(device => {
+        log('"' + device.name + '" bluetooth device selected');
+        deviceCache = device;
+
+        // Добавленная строка
+        deviceCache.addEventListener('gattserverdisconnected',
+            handleDisconnection);
+
+        return deviceCache;
+      });
+}
+function requestBluetoothDevice_cc2541() {
+  log('Requesting bluetooth device...');
+
+  return navigator.bluetooth.requestDevice({
+    filters: [{services: [0xFFF0]}],
   }).
       then(device => {
         log('"' + device.name + '" bluetooth device selected');
