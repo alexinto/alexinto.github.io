@@ -48,6 +48,7 @@ function connect_cc2541() {
 
 // Подключение к определенному устройству, получение сервиса и характеристики
 let characteristicCache = null;
+let characteristicWrCache = null;
 
 // Подключение к определенному устройству, получение сервиса и характеристики
 function connectDeviceAndCacheCharacteristic(device) {
@@ -56,22 +57,31 @@ function connectDeviceAndCacheCharacteristic(device) {
   }
 
   log('Connecting to GATT server...');
+  device.gatt.connect().
+	then(server => {
+	log('GATT server connected, getting service...');
+	return server.getPrimaryService(0xFFE0);
+	}).
+	then(service => {
+	log('Service found, getting characteristic...');
+	return service.getCharacteristic(0xFFE2);
+	}).
+	then(characteristic => {
+	log('Characteristic write found');
+	characteristicWrCache = characteristic;
+	return characteristicWrCache;
+	  });
 
   return device.gatt.connect().
       then(server => {
-        log('GATT server connected, getting service...');
-
         return server.getPrimaryService(0xFFE0);
       }).
       then(service => {
-        log('Service found, getting characteristic...');
-
         return service.getCharacteristic(0xFFE1);
       }).
       then(characteristic => {
-        log('Characteristic found');
+        log('Characteristic notification found');
         characteristicCache = characteristic;
-
         return characteristicCache;
       });
 }
@@ -223,8 +233,8 @@ function receive(data) {
 // Отправить данные подключенному устройству
 function send(data) {
   data = String(data);
-
-  if (!data || !characteristicCache) {
+	
+  if (!data || !characteristicWrCache) {
     return;
   }
 
@@ -233,16 +243,16 @@ function send(data) {
   if (data.length > 20) {
     let chunks = data.match(/(.|[\r\n]){1,20}/g);
 
-    writeToCharacteristic(characteristicCache, chunks[0]);
+    writeToCharacteristic(characteristicWrCache, chunks[0]);
 
     for (let i = 1; i < chunks.length; i++) {
       setTimeout(() => {
-        writeToCharacteristic(characteristicCache, chunks[i]);
+        writeToCharacteristic(characteristicWrCache, chunks[i]);
       }, i * 100);
     }
   }
   else {
-    writeToCharacteristic(characteristicCache, data);
+    writeToCharacteristic(characteristicWrCache, data);
   }
 
   log(data, 'out');
