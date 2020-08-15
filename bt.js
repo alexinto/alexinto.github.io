@@ -209,6 +209,7 @@ let readBuffer = '';
 // Получение данных
 function handleCharacteristicValueChanged(event) {
   let value = new TextDecoder().decode(event.target.value);
+  receive(value);
 
   for (let c of value) {
     if (c === '\n') {
@@ -233,12 +234,10 @@ function receive(data) {
 // Отправить данные подключенному устройству
 function send(data) {
   data = String(data);
-	
+
   if (!data || !characteristicWrCache) {
     return;
   }
-
-  data += '\n';
 
   if (data.length > 20) {
     let chunks = data.match(/(.|[\r\n]){1,20}/g);
@@ -252,12 +251,12 @@ function send(data) {
     }
   }
   else {
-    writeToCharacteristic(characteristicWrCache, data);
+    writeToCharacteristic(characteristicWrCache,data);
   }
-
+  
   log(data, 'out');
 }
 // Записать значение в характеристику
 function writeToCharacteristic(characteristic, data) {
-  characteristic.writeValue(new TextEncoder().encode(data));
+  characteristic.writeValue(new Uint8Array([58,7,1,4,0,-56,0,29]));
 }
