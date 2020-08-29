@@ -270,7 +270,8 @@ let value = new TextDecoder().decode(event.target.value);
 
 // Обработка полученных данных
 function receive(data) {
-  log(data, 'in');
+  let data_log = "BT ===> " + data;
+  log(data_log, 'in');
 }
 
 // Отправить данные подключенному устройству
@@ -295,8 +296,8 @@ function send(data) {
   else {
     writeToCharacteristic(characteristicWrCache,data);
   }
-  
-  log(data, 'out');
+  let data_log = "BT <=== " + data;
+  log(data_log, 'out');
 }
 // Записать значение в характеристику
 function writeToCharacteristic(characteristic, data) {
