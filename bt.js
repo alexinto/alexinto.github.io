@@ -32,7 +32,6 @@ greenoffButton.addEventListener('click', function() {
 function red_on() {
  let val = "red on";
  send(val);
- 
 }
 function red_off() {
 let val = "red off";
@@ -158,6 +157,7 @@ function connectDeviceAndCacheCharacteristic_cc2541(device) {
 function log(data, type = '') {
   terminalContainer.insertAdjacentHTML('beforeend',
       '<div' + (type ? ' class="' + type + '"' : '') + '>' + data + '</div>');
+      terminalContainer.scrollTop = 999999999;
 }
 
 // Запрос выбора Bluetooth устройства
