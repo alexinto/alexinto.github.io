@@ -91,22 +91,31 @@ function connectDeviceAndCacheCharacteristic_cc2541(device) {
   }
 
   log('Connecting to GATT server...');
+  device.gatt.connect().
+	then(server => {
+	log('GATT server connected, getting service...');
+	return server.getPrimaryService(0xFFF0);
+	}).
+	then(service => {
+	log('Service found, getting characteristic...');
+	return service.getCharacteristic(0xFFF3);
+	}).
+	then(characteristic => {
+	log('Characteristic write found');
+	characteristicWrCache = characteristic;
+	return characteristicWrCache;
+	  });
 
   return device.gatt.connect().
       then(server => {
-        log('GATT server connected, getting service...');
-
         return server.getPrimaryService(0xFFF0);
       }).
       then(service => {
-        log('Service found, getting characteristic...');
-
         return service.getCharacteristic(0xFFF4);
       }).
       then(characteristic => {
-        log('Characteristic found');
+        log('Characteristic notification found');
         characteristicCache = characteristic;
-
         return characteristicCache;
       });
 }
@@ -208,18 +217,20 @@ let readBuffer = '';
 
 // Получение данных
 function handleCharacteristicValueChanged(event) {
-  let value = event.target.value;
-  let a = [];
-  let perc = [];
+let value = new TextDecoder().decode(event.target.value);
+//  let value = event.target.value;
+//  let a = [];
+//  let perc = [];
   // Convert raw data bytes to hex values just for the sake of showing something.
   // In the "real" world, you'd use data.getUint8, data.getUint16 or even
   // TextDecoder to process raw data bytes.
-  for (let i = 0; i < value.byteLength; i++) {
-    a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
-  }
-  receive(a);
-  perc.push('Percent: ' + ('00' + value.getUint8(7).toString(10)).slice(-2) + '%'); 
-  receive(perc);
+//  for (let i = 0; i < value.byteLength; i++) {
+//    a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+//  }
+//  receive(a);
+//  perc.push('Percent: ' + ('00' + value.getUint8(7).toString(10)).slice(-2) + '%'); 
+//  receive(perc);
+  receive(value);
 }
 
 // Обработка полученных данных
@@ -254,5 +265,6 @@ function send(data) {
 }
 // Записать значение в характеристику
 function writeToCharacteristic(characteristic, data) {
-  characteristic.writeValue(new Uint8Array([58,7,1,4,0,-56,0,29]));
+	characteristic.writeValue(new TextEncoder().encode(data));
+//  characteristic.writeValue(new Uint8Array([58,7,1,4,0,-56,0,29]));
 }
