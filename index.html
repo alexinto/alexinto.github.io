@@ -4,27 +4,36 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="styles.css" rel="stylesheet">
+    <title>Bluetooth</title>
     <style type="text/css">
       body { margin: 0; }
-      #send-form, #terminal, #buttons, #version { position: absolute; } 
+      #send-form, #terminal, #buttons, #version, #buttons_red { position: absolute;} 
       #send-form, #terminal { overflow: auto; padding: 10px; }
       #version {
-       top: 390px; /* Расстояние от верхнего края */ 
+       top: 590px; /* Расстояние от верхнего края */ 
        left: 100px; /* Расстояние от левого края */ 
        color: #AAAAAA;
       }      
       #buttons {
        top: 5px; /* Расстояние от верхнего края */ 
        left: 10px; /* Расстояние от левого края */ 
+       width: 350px;
+       height: 50px; 
+      }
+      #buttons_red {
+       top: 50px; /* Расстояние от верхнего края */ 
+       left: 10px; /* Расстояние от левого края */ 
+       width: 350px;
+       height: 100px; 
       }
       #send-form { 
-       top: 350px; /* Расстояние от верхнего края */ 
+       top: 550px; /* Расстояние от верхнего края */ 
        left: 100px; /* Расстояние от левого края */ 
       }
       #terminal {
-       width: 300px; border: 1px solid #231F20;
+       width: 305px; border: 1px solid #231F20;
        height: 300px; 
-       top: 30px; /* Расстояние от верхнего края */
+       top: 230px; /* Расстояние от верхнего края */
        left: 10px; /* Расстояние от левого края */ 
        bottom: 0; right: 0;
       }
@@ -43,6 +52,13 @@
     <button id="connect" type="button">Connect Gelezka</button>
     <button id="connect2" type="button">Connect CC2541</button>
     <button id="disconnect" type="button">Disconnect</button>
+</div>
+
+<div id="buttons_red">
+    <button id="red_on" style="vertical-align: bottom; color: red; font-size: 2em" type="button">Red on</button>
+    <button id="green_on" style="vertical-align: bottom; color: green; font-size: 2em" type="button">Green on</button>
+    <button id="red_off" style="vertical-align: bottom; color: red; font-size: 2em" type="button">Red off</button>
+    <button id="green_off" style="vertical-align: bottom; color: green; font-size: 2em" type="button">Green off</button>
 </div>
 
 <div id="version">

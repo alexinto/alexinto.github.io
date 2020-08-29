@@ -5,6 +5,10 @@ let disconnectButton = document.getElementById('disconnect');
 let terminalContainer = document.getElementById('terminal');
 let sendForm = document.getElementById('send-form');
 let inputField = document.getElementById('input');
+let redonButton = document.getElementById('red_on');
+let redoffButton = document.getElementById('red_off');
+let greenonButton = document.getElementById('green_on');
+let greenoffButton = document.getElementById('green_off');
 
 // Подключение к устройству при нажатии на кнопку Connect
 connectButton.addEventListener('click', function() {
@@ -13,6 +17,37 @@ connectButton.addEventListener('click', function() {
 connect2Button.addEventListener('click', function() {
   connect_cc2541();
 });
+redonButton.addEventListener('click', function() {
+  red_on();
+});
+redoffButton.addEventListener('click', function() {
+  red_off();
+});
+greenonButton.addEventListener('click', function() {
+  green_on();
+});
+greenoffButton.addEventListener('click', function() {
+  green_off();
+});
+function red_on() {
+ let val = "red on";
+ send(val);
+ 
+}
+function red_off() {
+let val = "red off";
+ send(val);
+}
+function green_on() {
+let val = "green on";
+ send(val);
+}
+function green_off() {
+let val = "green off";
+ send(val);
+}
+
+
 
 // Отключение от устройства при нажатии на кнопку Disconnect
 disconnectButton.addEventListener('click', function() {
