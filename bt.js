@@ -191,8 +191,8 @@ function handleDisconnection(event) {
 
   log('"' + device.name +
       '" bluetooth device disconnected, trying to reconnect...');
-
-  connectDeviceAndCacheCharacteristic(device).
+  
+  connectDeviceAndCacheCharacteristic_cc2541(device).
       then(characteristic => startNotifications(characteristic)).
       catch(error => log(error));
 }
@@ -237,7 +237,7 @@ function disconnect() {
         handleCharacteristicValueChanged);
     characteristicCache = null;
   }
-
+  characteristicWrCache = NULL;
   deviceCache = null;
 }
 
