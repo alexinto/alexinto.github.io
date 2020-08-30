@@ -22,6 +22,8 @@ led_green.addEventListener('click', function() {
   green_on();
 });
 
+let init = null;
+
 function red_on() {
  let val = "red off";
  if (led_red.value == 0)
@@ -35,7 +37,20 @@ let val = "green off";
  send(val);
 }
 
-
+function initing() {
+ let val = "red off";
+ let val_green = "green off";
+ if (init == null) {
+	 if (led_red.value != 0)
+	      send(val);
+         else if (led_green.value != 0)
+	      send(val_green);
+	 else
+	     init = 1; 
+ }
+ if (init == null)
+     setTimeout(initing, 1000);
+}
 
 // Отключение от устройства при нажатии на кнопку Disconnect
 disconnectButton.addEventListener('click', function() {
@@ -52,7 +67,6 @@ sendForm.addEventListener('submit', function(event) {
 
 // Кэш объекта выбранного устройства
 let deviceCache = null;
-let init = null;
 // Запустить выбор Bluetooth устройства и подключиться к выбранному
 function connect() {
   return (deviceCache ? Promise.resolve(deviceCache) :
@@ -198,12 +212,8 @@ function handleDisconnection(event) {
 }
 // Включение получения уведомлений об изменении характеристики
 function startNotifications(characteristic) {
+  let val = "red off";
   log('Starting notifications...');
-  if (init == null) {
-     init = 1;
-     led_red.value = 0;
-     led_green.value = 0;
-  }
 
   return characteristic.startNotifications().
       then(() => {
@@ -211,6 +221,10 @@ function startNotifications(characteristic) {
         // Добавленная строка
         characteristic.addEventListener('characteristicvaluechanged',
             handleCharacteristicValueChanged);
+        init = null;
+        led_red.value = 1;
+        led_green.value = 1;
+        setTimeout(initing, 1000);
       });
 }
 
@@ -237,7 +251,7 @@ function disconnect() {
         handleCharacteristicValueChanged);
     characteristicCache = null;
   }
-  characteristicWrCache = NULL;
+  characteristicWrCache = null;
   deviceCache = null;
 }
 
@@ -264,6 +278,7 @@ let value = new TextDecoder().decode(event.target.value);
 
 // Обработка полученных данных
 function receive(data) {
+
   if (data == "Red: On") {
      led_red.src = 'Images/led_red.gif';
      led_red.value = 1;
@@ -280,7 +295,6 @@ function receive(data) {
      led_green.src = 'Images/led_off.gif';
      led_green.value = 0;
      }
-     
   let data_log = "BT ===> " + data;
   log(data_log, 'in');
 }
