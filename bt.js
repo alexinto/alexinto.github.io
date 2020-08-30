@@ -38,14 +38,14 @@ let val = "green off";
 }
 
 function initing() {
- let val = "red off";
- let val_green = "green off";
+ let val = "red is";
+ let val_green = "green is";
  if (init == null) {
-	 if (led_red.value != 0) {
+	 if (led_red.value > 1) {
 	      log('Config led "red"...');
 	      writeToCharacteristic(characteristicWrCache,val);
 	      }
-         else if (led_green.value != 0) {
+         else if (led_green.value > 1) {
 	      log('Config led "green"...');
 	      writeToCharacteristic(characteristicWrCache,val_green);
 	      }
@@ -228,8 +228,8 @@ function startNotifications(characteristic) {
         characteristic.addEventListener('characteristicvaluechanged',
             handleCharacteristicValueChanged);
         init = null;
-        led_red.value = 1;
-        led_green.value = 1;
+        led_red.value = 2;
+        led_green.value = 2;
         log('Start config device...');
         setTimeout(initing, 1000);
       });
