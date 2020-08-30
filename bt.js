@@ -41,15 +41,21 @@ function initing() {
  let val = "red off";
  let val_green = "green off";
  if (init == null) {
-	 if (led_red.value != 0)
-	      send(val);
-         else if (led_green.value != 0)
-	      send(val_green);
+	 if (led_red.value != 0) {
+	      log('Config led "red"...');
+	      writeToCharacteristic(characteristicWrCache,val);
+	      }
+         else if (led_green.value != 0) {
+	      log('Config led "green"...');
+	      writeToCharacteristic(characteristicWrCache,val_green);
+	      }
 	 else
 	     init = 1; 
  }
  if (init == null)
      setTimeout(initing, 1000);
+ else
+     log('Device is configured.');
 }
 
 // Отключение от устройства при нажатии на кнопку Disconnect
@@ -224,6 +230,7 @@ function startNotifications(characteristic) {
         init = null;
         led_red.value = 1;
         led_green.value = 1;
+        log('Start config device...');
         setTimeout(initing, 1000);
       });
 }
@@ -295,8 +302,10 @@ function receive(data) {
      led_green.src = 'Images/led_off.gif';
      led_green.value = 0;
      }
-  let data_log = "BT ===> " + data;
-  log(data_log, 'in');
+  if (init != null) {
+     let data_log = "BT ===> " + data;
+     log(data_log, 'in');
+  }
 }
 
 // Отправить данные подключенному устройству
